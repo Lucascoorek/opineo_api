@@ -9,7 +9,8 @@ app.use(express.json({ extended: false }));
 app.get('/*', (req, res) => {
   try {
     let url = req.params[0];
-    if (!url.includes('http')) {
+    const pattern = /^(http|https):\/\//;
+    if (!pattern.test(url)) {
       url = `https://www.opineo.pl/sklep/${url}`;
     }
     const option = {
