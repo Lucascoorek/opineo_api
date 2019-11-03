@@ -10,28 +10,32 @@ app.get('/', (req, res) => {
   res.send('Hello from api');
 });
 
-app.get('/opineo/:name', (req, res) => {
+app.get('/*', (req, res) => {
   try {
+    let url = req.params[0];
+    if (!url.includes('http')) {
+      url = `https://www.opineo.pl/sklep/${url}-pl`;
+    }
     const option = {
-      uri: `https://www.opineo.pl/sklep/${req.params.name}-pl`,
+      uri: url,
       method: 'GET',
       headers: { 'user-agent': 'node.js' }
     };
+
     request(option, (error, response, body) => {
       if (error) console.error(error);
       if (response.statusCode !== 200)
         return res.status(404).json({ msg: 'Data not found' });
 
-      const arr = [];
-      const $ = cheerio.load(body);
-
       //Scraping data
+      const $ = cheerio.load(body);
       const rating = $('.sh_rnote');
       const ratingCount = $('.sh_revcount');
       const ratingCountArr = ratingCount.text().split('opinii');
       const tr = $('.info tbody tr');
 
       // Array of key:value pairs from scrapped data
+      const arr = [];
       for (let i = 0; i < tr.length; i++) {
         arr[i] = tr.eq(i).text();
       }
