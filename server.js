@@ -24,19 +24,50 @@ app.get('/opineo/:name', (req, res) => {
 
       const arr = [];
       const $ = cheerio.load(body);
+
+      //Scraping data
+      const rating = $('.sh_rnote');
+      const ratingCount = $('.sh_revcount');
+      const ratingCountArr = ratingCount.text().split('opinii');
       const tr = $('.info tbody tr');
+
+      // Array of key:value pairs from scrapped data
       for (let i = 0; i < tr.length; i++) {
         arr[i] = tr.eq(i).text();
       }
 
+      //Contructing object of final data
       const obj = {};
+      obj['averageRating'] = rating.text();
+      obj['ratingCount'] = ratingCountArr[0];
       for (let str of arr) {
         const res = str.split(':');
-        obj[res[0]] = res[1];
-        if (res.length === 3) {
-          obj[res[0]] = res[1] + res[2];
+        if (res[0] === 'Nazwa firmy') {
+          obj['name'] = res[1];
+        }
+        if (res[0] === 'E-mail') {
+          obj['email'] = res[1];
+        }
+        if (res[0] === 'Telefon') {
+          obj['phone'] = res[1];
+        }
+        if (res[0] === 'Województwo') {
+          obj['voivodeship'] = res[1];
+        }
+        if (res[0] === 'Miasto') {
+          obj['city'] = res[1];
+        }
+        if (res[0] === 'Kod pocztowy') {
+          obj['postalCode'] = res[1];
+        }
+        if (res[0] === 'Ulica') {
+          obj['street'] = res[1];
+        }
+        if (res[0] === 'Www') {
+          obj['websiteUrl'] = res[1] + res[2];
         }
       }
+
       return res.json(obj);
     });
   } catch (error) {
