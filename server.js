@@ -10,7 +10,7 @@ app.get('/*', (req, res) => {
   try {
     let url = req.params[0];
     if (!url.includes('http')) {
-      url = `https://www.opineo.pl/sklep/${url}-pl`;
+      url = `https://www.opineo.pl/sklep/${url}`;
     }
     const option = {
       uri: url,
